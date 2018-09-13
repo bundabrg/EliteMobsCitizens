@@ -48,7 +48,7 @@ public class ShopHandler implements Listener {
     }
 
     public void open(Player player) {
-        shopInventory = Bukkit.createInventory(player, size, name);
+        shopInventory = Bukkit.createInventory(player, 54, name);
         for(int i =0; i < size; i++) {
             shopInventory.setItem(i, items.get(i));
         }

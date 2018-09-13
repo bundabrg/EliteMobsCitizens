@@ -1,11 +1,9 @@
 package au.com.grieve.elitemobscitizens;
 
-import au.com.grieve.elitemobscitizens.commands.EMSKCommand;
-import au.com.grieve.elitemobscitizens.shops.ShopHandler;
+import au.com.grieve.elitemobscitizens.commands.EMCSCommand;
 import au.com.grieve.elitemobscitizens.traits.ShopkeeperTrait;
 import co.aikar.commands.PaperCommandManager;
 import lombok.Getter;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.logging.Level;
@@ -51,7 +49,7 @@ public final class EliteMobsCitizens extends JavaPlugin {
         manager.enableUnstableAPI("help");
 
 
-        manager.registerCommand(new EMSKCommand());
+        manager.registerCommand(new EMCSCommand());
 
     }
 }

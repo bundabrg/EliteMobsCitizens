@@ -2,6 +2,10 @@ package au.com.grieve.elitemobscitizens.traits;
 
 import au.com.grieve.elitemobscitizens.EliteMobsCitizens;
 import au.com.grieve.elitemobscitizens.shops.ShopHandler;
+import com.magmaguy.elitemobs.config.ConfigValues;
+import com.magmaguy.elitemobs.config.ItemsDropSettingsConfig;
+import lombok.Getter;
+import lombok.Setter;
 import net.citizensnpcs.api.event.NPCClickEvent;
 import net.citizensnpcs.api.event.NPCLeftClickEvent;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
@@ -10,11 +14,22 @@ import net.citizensnpcs.api.util.DataKey;
 import org.bukkit.event.EventHandler;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 public class ShopkeeperTrait extends Trait {
 
     final private EliteMobsCitizens plugin;
     private ShopHandler shop;
     private int taskId;
+
+    // Settings
+
+    @Getter @Setter private int minSize;
+    @Getter @Setter private int maxSize;
+    @Getter @Setter private long updateTicks;
+    @Getter @Setter private int minTier;
+    @Getter @Setter private int maxTier;
+    @Getter @Setter private boolean enabled;
 
     public ShopkeeperTrait() {
         super("emshopkeeper");
@@ -22,13 +37,25 @@ public class ShopkeeperTrait extends Trait {
     }
 
     public void refreshShop() {
-        shop = new ShopHandler("SuperShop", 54, 0, 100, plugin);
+        shop = new ShopHandler("SuperShop", Math.max(1, ThreadLocalRandom.current().nextInt(Math.max(1,maxSize - minSize)) + minSize), minTier, maxTier, plugin);
     }
 
     public void load(DataKey key) {
+        minSize = key.getInt("minSize", 54);
+        maxSize = key.getInt("maxSize", 54);
+        updateTicks = key.getLong("updateTicks", 6000);
+        minTier = key.getInt("minTier", 0);
+        maxTier = key.getInt("maxTier", (int) Math.round(ConfigValues.itemsDropSettingsConfig.getDouble(ItemsDropSettingsConfig.MAXIMUM_LOOT_TIER)));
+        enabled  = key.getBoolean("enabled", true);
     }
 
     public void save(DataKey key) {
+        key.setInt("minSize", minSize);
+        key.setInt("maxSize", maxSize);
+        key.setLong("updateTicks", updateTicks);
+        key.setInt("minTier", minTier);
+        key.setInt("maxTier", maxTier);
+        key.setBoolean("enabled", enabled);
     }
 
     // Run when trait attached to NPC
@@ -53,7 +80,7 @@ public class ShopkeeperTrait extends Trait {
 
         // Update Shop every 6000 ticks
         long delay = getNPC().getStoredLocation().getWorld().getTime() - 24000;
-        taskId = plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(plugin, this::refreshShop, delay, 6000);
+        taskId = plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(plugin, this::refreshShop, delay, updateTicks);
     }
 
     // When when NPC is removed
@@ -62,23 +89,19 @@ public class ShopkeeperTrait extends Trait {
     }
 
     @EventHandler
-    public void onClick(NPCLeftClickEvent event) {
-        if (event.getNPC() != this.getNPC()) {
-            return;
-        }
-        event.getClicker().sendMessage("You clicked me with the left button");
-    }
-
-    @EventHandler
     public void onClick(NPCRightClickEvent event) {
         if (event.getNPC() != this.getNPC()) {
             return;
         }
-        event.getClicker().sendMessage("You clicked me with the right button");
+
+        // Shop Enabled?
+        if (!enabled) {
+            return;
+        }
 
         // Open Shop
         shop.open(event.getClicker());
-
     }
+
 
 }

@@ -5,4 +5,4 @@ depend: [EliteMobs, Citizens]
 authors: [Bundabrg]
 description: Citizen support for EliteMobs
 commands:
-  emsk: {}
+  emcs: {}
