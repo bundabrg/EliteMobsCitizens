@@ -6,8 +6,6 @@ import com.magmaguy.elitemobs.config.ConfigValues;
 import com.magmaguy.elitemobs.config.ItemsDropSettingsConfig;
 import lombok.Getter;
 import lombok.Setter;
-import net.citizensnpcs.api.event.NPCClickEvent;
-import net.citizensnpcs.api.event.NPCLeftClickEvent;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
 import net.citizensnpcs.api.trait.Trait;
 import net.citizensnpcs.api.util.DataKey;
@@ -30,17 +28,19 @@ public class ShopkeeperTrait extends Trait {
     @Getter @Setter private int minTier;
     @Getter @Setter private int maxTier;
     @Getter @Setter private boolean enabled;
+    @Getter @Setter private String shopName = "Shop";
 
     public ShopkeeperTrait() {
-        super("emshopkeeper");
+        super("emcs");
         this.plugin = JavaPlugin.getPlugin(EliteMobsCitizens.class);
     }
 
     public void refreshShop() {
-        shop = new ShopHandler("SuperShop", Math.max(1, ThreadLocalRandom.current().nextInt(Math.max(1,maxSize - minSize)) + minSize), minTier, maxTier, plugin);
+        shop = new ShopHandler(shopName, Math.max(1, ThreadLocalRandom.current().nextInt(Math.max(1,maxSize - minSize)) + minSize), minTier, maxTier, plugin);
     }
 
     public void load(DataKey key) {
+        shopName = key.getString("name", "Shop");
         minSize = key.getInt("minSize", 54);
         maxSize = key.getInt("maxSize", 54);
         updateTicks = key.getLong("updateTicks", 6000);
@@ -50,6 +50,7 @@ public class ShopkeeperTrait extends Trait {
     }
 
     public void save(DataKey key) {
+        key.setString("name", shopName);
         key.setInt("minSize", minSize);
         key.setInt("maxSize", maxSize);
         key.setLong("updateTicks", updateTicks);

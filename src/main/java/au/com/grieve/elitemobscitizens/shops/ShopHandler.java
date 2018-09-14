@@ -65,7 +65,7 @@ public class ShopHandler implements Listener {
 
         // Generate Items
         for(int i = 0; i < size; i++) {
-            int itemTier = random.nextInt(maxTier-minTier) + minTier;
+            int itemTier = maxTier-minTier < 1?0:(random.nextInt(maxTier-minTier) + minTier);
 
             items.add(ItemConstructor.constructItem(itemTier, null));
         }

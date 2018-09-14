@@ -17,6 +17,7 @@ public class EMC_Plugin {
         this.plugin = plugin;
         this.addon = new EMC_Addon(this);
         DestinationsPlugin.Instance.getPluginManager.registerPlugin(addon);
+        DestinationsPlugin.Instance.getCommandManager.registerCommandClass(EMC_Commands.class);
     }
 
     public EMC_LocationSettings getCurrentSettings(NPC npc) {
@@ -27,7 +28,7 @@ public class EMC_Plugin {
         ShopkeeperTrait shopTrait = npc.getTrait(ShopkeeperTrait.class);
         EMC_LocationSettings currentSettings = new EMC_LocationSettings();
 
-        currentSettings.setLasteSet(new Date());
+        currentSettings.setLastSet(new Date());
         currentSettings.setMinSize(shopTrait.getMinSize());
         currentSettings.setMaxSize(shopTrait.getMaxSize());
         currentSettings.setMinTier(shopTrait.getMinTier());

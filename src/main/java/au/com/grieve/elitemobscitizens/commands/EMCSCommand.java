@@ -2,9 +2,7 @@ package au.com.grieve.elitemobscitizens.commands;
 
 import au.com.grieve.elitemobscitizens.traits.ShopkeeperTrait;
 import co.aikar.commands.BaseCommand;
-import co.aikar.commands.annotation.CommandAlias;
-import co.aikar.commands.annotation.Dependency;
-import co.aikar.commands.annotation.Subcommand;
+import co.aikar.commands.annotation.*;
 import com.magmaguy.elitemobs.config.ConfigValues;
 import com.magmaguy.elitemobs.config.ItemsDropSettingsConfig;
 import net.citizensnpcs.api.CitizensAPI;
@@ -32,13 +30,14 @@ public class EMCSCommand extends BaseCommand {
 
         // Does it have our trait?
         if (!npc.hasTrait(ShopkeeperTrait.class)) {
-            sender.sendMessage(ChatColor.RED + "NPC lacks the 'emshopkeeper' trait.");
+            sender.sendMessage(ChatColor.RED + "NPC lacks the 'emcs' trait.");
             return null;
         }
 
         return npc;
     }
 
+    @HelpCommand
     @Subcommand("info")
     public void onTest1(CommandSender sender) {
         NPC npc = getNPC(sender);
@@ -49,6 +48,8 @@ public class EMCSCommand extends BaseCommand {
         ShopkeeperTrait shopTrait = npc.getTrait(ShopkeeperTrait.class);
 
         sender.spigot().sendMessage(new ComponentBuilder("=== [ EMC Shopkeeper Info ] ===").color(ChatColor.AQUA).create());
+        sender.spigot().sendMessage(new ComponentBuilder("Shop Name: ").color(ChatColor.DARK_AQUA)
+                .append(shopTrait.getShopName()).color(ChatColor.GREEN).create());
         sender.spigot().sendMessage(new ComponentBuilder("Shop Size: ").color(ChatColor.DARK_AQUA)
                 .append(String.valueOf(shopTrait.getMinSize()) + " - " + String.valueOf(shopTrait.getMaxSize())).color(ChatColor.GREEN).create());
         sender.spigot().sendMessage(new ComponentBuilder("Tier Range: ").color(ChatColor.DARK_AQUA)
@@ -120,4 +121,20 @@ public class EMCSCommand extends BaseCommand {
         sender.spigot().sendMessage(new ComponentBuilder("Updated Shop.").create());
     }
 
+    @Subcommand("name")
+    public void onName(CommandSender sender, String name) {
+        NPC npc = getNPC(sender);
+        if (npc == null) {
+            return;
+        }
+
+        ShopkeeperTrait shopTrait = npc.getTrait(ShopkeeperTrait.class);
+
+        shopTrait.setShopName(name);
+        shopTrait.refreshShop();
+
+        sender.spigot().sendMessage(new ComponentBuilder("Updated Shop.").create());
+    }
+
 }
+
