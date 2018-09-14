@@ -38,6 +38,28 @@ public class EMCSCommand extends BaseCommand {
     }
 
     @HelpCommand
+    @Subcommand("help")
+    public void onHelp(CommandSender sender) {
+        NPC npc = getNPC(sender);
+        if (npc == null) {
+            return;
+        }
+
+        ShopkeeperTrait shopTrait = npc.getTrait(ShopkeeperTrait.class);
+
+        sender.spigot().sendMessage(new ComponentBuilder("=== [ EMC Shopkeeper Help ] ===").color(ChatColor.AQUA).create());
+        sender.spigot().sendMessage(new ComponentBuilder("/emcs info").color(ChatColor.DARK_AQUA)
+                .append(" - Show info about Shopkeeper").color(ChatColor.GRAY).create());
+        sender.spigot().sendMessage(new ComponentBuilder("/emcs size <min> <max>").color(ChatColor.DARK_AQUA)
+                .append(" - Set minimum and maximum size for shop").color(ChatColor.GRAY).create());
+        sender.spigot().sendMessage(new ComponentBuilder("/emcs tier <min> <max>").color(ChatColor.DARK_AQUA)
+                .append(" - Show minimum and maximum tier for offered items").color(ChatColor.GRAY).create());
+        sender.spigot().sendMessage(new ComponentBuilder("/emcs enabled {true|false}").color(ChatColor.DARK_AQUA)
+                .append(" - Enable or Disable Shop").color(ChatColor.GRAY).create());
+        sender.spigot().sendMessage(new ComponentBuilder("/emcs vault {true|false}").color(ChatColor.DARK_AQUA)
+                .append(" - Enable or Disable Vault Integration").color(ChatColor.GRAY).create());
+    }
+
     @Subcommand("info")
     public void onTest1(CommandSender sender) {
         NPC npc = getNPC(sender);
@@ -116,6 +138,21 @@ public class EMCSCommand extends BaseCommand {
         ShopkeeperTrait shopTrait = npc.getTrait(ShopkeeperTrait.class);
 
         shopTrait.setEnabled(enabled);
+        shopTrait.refreshShop();
+
+        sender.spigot().sendMessage(new ComponentBuilder("Updated Shop.").create());
+    }
+
+    @Subcommand("vault")
+    public void onVault(CommandSender sender, boolean enabled) {
+        NPC npc = getNPC(sender);
+        if (npc == null) {
+            return;
+        }
+
+        ShopkeeperTrait shopTrait = npc.getTrait(ShopkeeperTrait.class);
+
+        shopTrait.setVaultEnabled(enabled);
         shopTrait.refreshShop();
 
         sender.spigot().sendMessage(new ComponentBuilder("Updated Shop.").create());

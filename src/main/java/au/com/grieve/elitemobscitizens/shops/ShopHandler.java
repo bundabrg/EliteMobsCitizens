@@ -40,7 +40,6 @@ public class ShopHandler implements Listener {
     private int maxTier;
     private JavaPlugin plugin;
     private List<ItemStack> items = new ArrayList<>();
-    private Runnable handler;
 
     public ShopHandler(String name, int size, int minTier, int maxTier, JavaPlugin plugin) {
         this.name = name;
@@ -52,9 +51,6 @@ public class ShopHandler implements Listener {
         populateShop();
     }
 
-    public void setEventHandler(Runnable r) {
-        handler = r;
-    }
 
     public void open(Player player) {
         shopInventory = Bukkit.createInventory(player, 54, name);

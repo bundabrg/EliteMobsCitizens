@@ -11,6 +11,7 @@ import net.citizensnpcs.api.trait.Trait;
 import net.citizensnpcs.api.util.DataKey;
 import org.bukkit.event.EventHandler;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -18,16 +19,17 @@ public class ShopkeeperTrait extends Trait {
 
     final private EliteMobsCitizens plugin;
     private ShopHandler shop;
-    private int taskId;
+    private BukkitTask taskId;
 
-    // Settings
+    // Settings and their defaults
 
-    @Getter @Setter private int minSize;
-    @Getter @Setter private int maxSize;
-    @Getter @Setter private long updateTicks;
-    @Getter @Setter private int minTier;
-    @Getter @Setter private int maxTier;
-    @Getter @Setter private boolean enabled;
+    @Getter @Setter private int minSize = 45;
+    @Getter @Setter private int maxSize = 54;
+    @Getter @Setter private long updateTicks = 6000;
+    @Getter @Setter private int minTier = 0;
+    @Getter @Setter private int maxTier = 10;
+    @Getter @Setter private boolean enabled = true;
+    @Getter @Setter private boolean vaultEnabled = false;
     @Getter @Setter private String shopName = "Shop";
 
     public ShopkeeperTrait() {
@@ -76,7 +78,7 @@ public class ShopkeeperTrait extends Trait {
     // Run when despawned
     @Override
     public void onDespawn() {
-        plugin.getServer().getScheduler().cancelTask(taskId);
+        taskId.cancel();
         destroyShop();
     }
 
@@ -87,7 +89,7 @@ public class ShopkeeperTrait extends Trait {
 
         // Update Shop every 6000 ticks
         long delay = getNPC().getStoredLocation().getWorld().getTime() - 24000;
-        taskId = plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(plugin, this::refreshShop, delay, updateTicks);
+        taskId = plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, this::refreshShop, delay, updateTicks);
     }
 
     // When when NPC is removed

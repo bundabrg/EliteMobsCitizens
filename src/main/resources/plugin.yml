@@ -4,6 +4,7 @@ main: au.com.grieve.elitemobscitizens.EliteMobsCitizens
 depend: [EliteMobs, Citizens]
 softdepend:
 - NPC_Destinations
+- Vault
 authors: [Bundabrg]
 description: Citizen support for EliteMobs
 commands:
