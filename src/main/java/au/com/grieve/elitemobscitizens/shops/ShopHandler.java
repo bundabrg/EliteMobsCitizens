@@ -5,9 +5,13 @@ import com.magmaguy.elitemobs.commands.shops.SharedShopElements;
 import com.magmaguy.elitemobs.config.ConfigValues;
 import com.magmaguy.elitemobs.config.EconomySettingsConfig;
 import com.magmaguy.elitemobs.config.MobCombatSettingsConfig;
+import com.magmaguy.elitemobs.economy.EconomyHandler;
+import com.magmaguy.elitemobs.economy.UUIDFilter;
 import com.magmaguy.elitemobs.items.ItemWorthCalculator;
+import com.magmaguy.elitemobs.items.ObfuscatedSignatureLoreData;
 import com.magmaguy.elitemobs.items.itemconstructor.ItemConstructor;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -22,7 +26,7 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Generates a shop based upon a provided seed.
+ * Generates a shop
  * Items are generated between min-max tier
  * Items are ordered by cost
  */
@@ -36,6 +40,7 @@ public class ShopHandler implements Listener {
     private int maxTier;
     private JavaPlugin plugin;
     private List<ItemStack> items = new ArrayList<>();
+    private Runnable handler;
 
     public ShopHandler(String name, int size, int minTier, int maxTier, JavaPlugin plugin) {
         this.name = name;
@@ -45,6 +50,10 @@ public class ShopHandler implements Listener {
         this.plugin = plugin;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
         populateShop();
+    }
+
+    public void setEventHandler(Runnable r) {
+        handler = r;
     }
 
     public void open(Player player) {
@@ -85,7 +94,67 @@ public class ShopHandler implements Listener {
             return;
         }
 
+
+        Player player = (Player) event.getWhoClicked();
+
+        // Prevent non-elite items being sold here
+        if (!ObfuscatedSignatureLoreData.obfuscatedSignatureDetector(event.getCurrentItem())) {
+            event.setCancelled(true);
+            return;
+        }
+
+        ItemStack itemStack = event.getCurrentItem();
+        String itemDisplayName = itemStack.getItemMeta().getDisplayName();
+
+        // Buy Item
+        if (event.getClickedInventory().getName().equalsIgnoreCase(name)) {
+            double itemValue = ItemWorthCalculator.determineItemWorth(itemStack);
+
+            boolean inventoryHasFreeSlots = false;
+            for (ItemStack iteratedStack : player.getInventory().getStorageContents()) {
+                if (iteratedStack == null) {
+                    inventoryHasFreeSlots = true;
+                    break;
+                }
+            }
+
+            if (!inventoryHasFreeSlots) {
+                player.sendMessage("You have no free space in your inventory.");
+                plugin.getServer().getScheduler().runTask(plugin, player::closeInventory);
+
+                event.setCancelled(true);
+                return;
+            }
+
+            if (EconomyHandler.checkCurrency(UUIDFilter.guessUUI(player.getName())) < itemValue) {
+                plugin.getServer().getScheduler().runTask(plugin, () -> SharedShopElements.insufficientFundsMessage(player, itemValue));
+                event.setCancelled(true);
+                return;
+            }
+
+            EconomyHandler.subtractCurrency(UUIDFilter.guessUUI(player.getName()), itemValue);
+            player.getInventory().addItem(itemStack);
+            event.setCurrentItem(new ItemStack(Material.AIR));
+            SharedShopElements.buyMessage(player, itemDisplayName, itemValue);
+
+            event.setCancelled(true);
+            return;
+        }
+
+        // Sell Item
+        double amountDeduced = ItemWorthCalculator.determineResaleWorth(itemStack);
+        EconomyHandler.addCurrency(UUIDFilter.guessUUI(player.getName()), amountDeduced);
+
+        if (event.getCurrentItem().getAmount() == 1) {
+            event.setCurrentItem(new ItemStack(Material.AIR));
+        } else {
+            event.getCurrentItem().setAmount(event.getCurrentItem().getAmount()-1);
+        }
+
+        SharedShopElements.sellMessage(player, itemDisplayName, amountDeduced);
+
         event.setCancelled(true);
+
     }
 
     // Handle Close

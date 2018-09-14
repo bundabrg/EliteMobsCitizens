@@ -35,8 +35,17 @@ public class ShopkeeperTrait extends Trait {
         this.plugin = JavaPlugin.getPlugin(EliteMobsCitizens.class);
     }
 
+    public void destroyShop() {
+        if (shop != null) {
+            shop.destroy();
+        }
+        shop = null;
+    }
+
     public void refreshShop() {
+        destroyShop();
         shop = new ShopHandler(shopName, Math.max(1, ThreadLocalRandom.current().nextInt(Math.max(1,maxSize - minSize)) + minSize), minTier, maxTier, plugin);
+
     }
 
     public void load(DataKey key) {
@@ -68,10 +77,7 @@ public class ShopkeeperTrait extends Trait {
     @Override
     public void onDespawn() {
         plugin.getServer().getScheduler().cancelTask(taskId);
-        if (shop != null) {
-            shop.destroy();
-            shop = null;
-        }
+        destroyShop();
     }
 
     // When when spawned
