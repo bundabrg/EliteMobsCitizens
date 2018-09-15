@@ -2,9 +2,6 @@ package au.com.grieve.elitemobscitizens.shops;
 
 
 import com.magmaguy.elitemobs.commands.shops.SharedShopElements;
-import com.magmaguy.elitemobs.config.ConfigValues;
-import com.magmaguy.elitemobs.config.EconomySettingsConfig;
-import com.magmaguy.elitemobs.config.MobCombatSettingsConfig;
 import com.magmaguy.elitemobs.economy.EconomyHandler;
 import com.magmaguy.elitemobs.economy.UUIDFilter;
 import com.magmaguy.elitemobs.items.ItemWorthCalculator;
