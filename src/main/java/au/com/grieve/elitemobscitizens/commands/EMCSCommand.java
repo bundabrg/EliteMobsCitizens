@@ -10,7 +10,6 @@ import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 @CommandAlias("emcs")
@@ -54,10 +53,10 @@ public class EMCSCommand extends BaseCommand {
                 .append(" - Set minimum and maximum size for shop").color(ChatColor.GRAY).create());
         sender.spigot().sendMessage(new ComponentBuilder("/emcs tier <min> <max>").color(ChatColor.DARK_AQUA)
                 .append(" - Show minimum and maximum tier for offered items").color(ChatColor.GRAY).create());
+        sender.spigot().sendMessage(new ComponentBuilder("/emcs update_ticks <ticks>").color(ChatColor.DARK_AQUA)
+                .append(" - How often to refresh shop").color(ChatColor.GRAY).create());
         sender.spigot().sendMessage(new ComponentBuilder("/emcs enabled {true|false}").color(ChatColor.DARK_AQUA)
                 .append(" - Enable or Disable Shop").color(ChatColor.GRAY).create());
-        sender.spigot().sendMessage(new ComponentBuilder("/emcs vault {true|false}").color(ChatColor.DARK_AQUA)
-                .append(" - Enable or Disable Vault Integration").color(ChatColor.GRAY).create());
     }
 
     @Subcommand("info")
@@ -138,21 +137,6 @@ public class EMCSCommand extends BaseCommand {
         ShopkeeperTrait shopTrait = npc.getTrait(ShopkeeperTrait.class);
 
         shopTrait.setEnabled(enabled);
-        shopTrait.refreshShop();
-
-        sender.spigot().sendMessage(new ComponentBuilder("Updated Shop.").create());
-    }
-
-    @Subcommand("vault")
-    public void onVault(CommandSender sender, boolean enabled) {
-        NPC npc = getNPC(sender);
-        if (npc == null) {
-            return;
-        }
-
-        ShopkeeperTrait shopTrait = npc.getTrait(ShopkeeperTrait.class);
-
-        shopTrait.setVaultEnabled(enabled);
         shopTrait.refreshShop();
 
         sender.spigot().sendMessage(new ComponentBuilder("Updated Shop.").create());

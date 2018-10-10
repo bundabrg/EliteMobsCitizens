@@ -29,7 +29,6 @@ public class ShopkeeperTrait extends Trait {
     @Getter @Setter private int minTier = 0;
     @Getter @Setter private int maxTier = 10;
     @Getter @Setter private boolean enabled = true;
-    @Getter @Setter private boolean vaultEnabled = false;
     @Getter @Setter private String shopName = "Shop";
 
     public ShopkeeperTrait() {

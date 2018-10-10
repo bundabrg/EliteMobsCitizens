@@ -6,7 +6,7 @@
 
     <groupId>au.com.grieve</groupId>
     <artifactId>EliteMobsCitizens</artifactId>
-    <version>1.0</version>
+    <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>EliteMobsCitizen</name>
@@ -39,11 +39,6 @@
             <id>bundabrg-repo</id>
             <url>https://repo.worldguard.com.au/repository/maven-public/</url>
         </repository>
-
-        <!--<repository>-->
-            <!--<id>vault-repo</id>-->
-            <!--<url>http://nexus.hc.to/content/repositories/pub_releases</url>-->
-        <!--</repository>-->
     </repositories>
 
     <dependencies>
@@ -72,13 +67,6 @@
             <version>1.18.2</version>
             <scope>provided</scope>
         </dependency>
-        <!--&lt;!&ndash; Vault &ndash;&gt;-->
-        <!--<dependency>-->
-            <!--<groupId>net.milkbowl.vault</groupId>-->
-            <!--<artifactId>VaultAPI</artifactId>-->
-            <!--<version>1.7</version>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
 
         <!-- Local Dependencies -->
 
